@@ -11,35 +11,55 @@ export default function App() {
   const [amount, setAmount] = useState('')
   const [total, setTotal] = useState(0)
   const [data, setData] = useState([
-    { [moment()]: 2000 },
-    { [moment().subtract(1, 'days')]: 2500 },
-    { [moment().subtract(2, 'days')]: 3000 },
-    { [moment().subtract(3, 'days')]: 3500 },
-    { [moment().subtract(5, 'days')]: 4000 }
+    { date: moment().format('LL'), amount: 2000 },
+    { date: moment().subtract(1, 'days').format('LL'), amount: 2500 },
+    { date: moment().subtract(2, 'days').format('LL'), amount: 3000 },
+    { date: moment().subtract(3, 'days').format('LL'), amount: 3500 },
+    { date: moment().subtract(4, 'days').format('LL'), amount: 4000 },
+    { date: moment().subtract(5, 'days').format('LL'), amount: 4000 },
+    { date: moment().subtract(5, 'days').format('LL'), amount: 6000 },
+    { date: moment().subtract(5, 'days').format('LL'), amount: 4000 }
      ])
   const [events, setEvents] = useState([{
     description: "Welcome, hope your earnings increase every day.",
     amount: 0,
     timestamp: new Date()
   }])
+  const [transformedData, setTransformedData] = useState([])
+
+  useEffect(() => {
+    setTransformedData(transformData(groupBy(data, 'date')))
+  }, [data])
 
   useEffect(() => {
    setTotal(events.reduce((total, events) => total+Number(events.amount), 0))
   }, [events])
 
+  const groupBy = (array, key) => 
+    array.reduce((rv, x) => {
+      (rv[x[key]] = rv[x[key]] || []).push(x)
+      return rv
+    }, {})
+
   const addEvent = () => {
     setEvents([...events, {
       description: description,
       amount: amount,
-      
+      timestamp: new Date()
     }])
     setDescription('')
     setAmount('')
   }
 
-  const getDates = () => {
-    const dates = data.map(pair => Object.keys(pair)[0])
-    return dates
+  const getDates = () => data.map(pair => pair.date)
+  const getAmounts = () => transformedData.map(pair => pair.amount)
+  const transformData = (groupedData) => {
+    const transformedArray = []
+    Object.entries(groupedData).forEach(entry => {
+      const total = entry[1].reduce((total,pair)=> total +pair.amount, 0)
+      transformedArray.push({data: entry[0], amount: total})
+    })
+    return transformedArray
   }
 
   return (
@@ -52,16 +72,10 @@ export default function App() {
         <Text>Earnings Graph</Text>
         <LineChart
           data={{
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            labels: getDates(),
             datasets: [
               {
-                data: [
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100,
-                  Math.random() * 100
-                ]
+                data: getAmounts()
               }
             ]
           }}
