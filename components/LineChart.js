@@ -1,13 +1,14 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, Dimensions } from 'react-native'
+import {LineChart} from 'react-native-chart-kit'
 
-const LineChart = () => {
+const Graph = (props) => {
     return (
         <View>
-        <Text>Bezier Line Chart</Text>
+        <Text>Earnings Graph</Text>
         <LineChart
           data={{
-            labels: ["January", "February", "March", "April", "May", "June"],
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
             datasets: [
               {
                 data: [
@@ -22,8 +23,8 @@ const LineChart = () => {
           }}
           width={Dimensions.get("window").width} // from react-native
           height={220}
-          yAxisLabel="$"
-          yAxisSuffix="k"
+          yAxisLabel="₹"
+
           yAxisInterval={1} // optional, defaults to 1
           chartConfig={{
             backgroundColor: "#e26a00",
@@ -52,6 +53,6 @@ const LineChart = () => {
     )
 }
 
-export default LineChart
+export default Graph
 
 const styles = StyleSheet.create({})
